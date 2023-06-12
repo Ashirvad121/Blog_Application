@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blog.payload.PostDto;
+import com.blog.payload.PostResponse;
 import com.blog.service.PostService;
 
 @RestController
@@ -30,13 +32,17 @@ public class PostController {
 	
 	//create blog post
 	@PostMapping
-	public ResponseEntity<PostDto> createPost(@RequestBody PostDto postDto){
+	public ResponseEntity<PostResponse> createPost(@RequestBody PostDto postDto){
 		return new ResponseEntity(postService.createPost(postDto),HttpStatus.CREATED);
 	}
 	@GetMapping
-	public ResponseEntity<List<PostDto>> getAllPosts(){
-		List<PostDto> postDto= postService.getAllPost();
-		return new ResponseEntity(postDto,HttpStatus.OK);
+	public ResponseEntity<List<PostDto>> getAllPosts(
+			@RequestParam(value="pageNo",defaultValue="0",required=false) int pageNo,
+			@RequestParam(value="pageSize",defaultValue = "10",required = false) int pageSize,
+			@RequestParam(value = "sortBy",defaultValue = "id", required = false) String sortBy
+			){
+		 PostResponse res= postService.getAllPost(pageNo,pageSize,sortBy);
+		return new ResponseEntity(res,HttpStatus.OK);
 	}
 	@GetMapping("/{id}")
 	public ResponseEntity<PostDto> getPostById(@PathVariable("id") long id){
