@@ -60,13 +60,16 @@ public class PostServiceImpl implements PostService{
 
 
 	@Override
-	public PostResponse getAllPost(int pageNo, int pageSize,String sortBy) {
+	public PostResponse getAllPost(int pageNo, int pageSize,String sortBy,String sortDir) {
 		//create Pageable instance
 		//Pageable is an interface
 		//AbstractPageRequest is an class which implement pageable
 		//PageRequest is a class which extend AbstractPageRequest
 		//of() is a static method belong from PageRequest
-		Pageable pageable=PageRequest.of(pageNo, pageSize,Sort.by(sortBy));
+		Sort sort=sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())? Sort.by(sortBy).ascending()
+				: Sort.by(sortBy).descending();
+		
+		Pageable pageable=PageRequest.of(pageNo, pageSize,sort);
 		Page<Post> posts= PostRepository.findAll(pageable);
 		//get content from page object
 		List<Post> listOfPosts= posts.getContent();
